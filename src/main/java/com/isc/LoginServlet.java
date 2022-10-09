@@ -3,7 +3,7 @@ package com.isc;
 import java.io.IOException;
 import java.sql.*;
 
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
@@ -21,7 +21,17 @@ public class LoginServlet extends HttpServlet {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "Venky1234@");
 			Statement stmt = con.createStatement();
-			stmt.executeQuery("select * from user where email='" + userName + "' and '" + password + "'");
+			ResultSet resultSet = stmt
+					.executeQuery("select * from user where email='" + userName + "' and '" + password + "'");
+			RequestDispatcher requestDispatcher = request.getRequestDispatcher("homeServlet");
+
+			if (resultSet.next()) {
+				request.setAttribute("message", "Welcone to InterServletCommunication" + userName);
+				requestDispatcher.forward(request, response);
+			} else {
+				requestDispatcher = request.getRequestDispatcher("login.html");
+				requestDispatcher.include(request, response);
+			}
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -29,7 +39,7 @@ public class LoginServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		doGet(request, response);
+//		doGet(request, response);
 	}
 
 }
